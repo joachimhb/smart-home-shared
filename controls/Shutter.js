@@ -1,0 +1,124 @@
+'use strict';
+
+const check = require('check-types-2');
+const delay = require('delay');
+const rpio = require('rpio');
+
+rpio.init({mapping: 'gpio'});
+
+class Shutter {
+  constructor(params) {
+    check.assert.object(params, 'params is not an object');
+    check.assert.object(params.logger, 'params.logger is not an object');
+    check.assert.string(params.location, 'params.location is not a string');
+    check.assert.number(params.powerGpio, 'params.powerGpio is not a number');
+    check.assert.number(params.directionGpio, 'params.directionGpio is not a number');
+    check.assert.number(params.fullCloseMs, 'params.fullCloseMs is not a number');
+    check.assert.maybe.number(params.status, 'params.status is not a number');
+    check.assert.maybe.string(params.movement, 'params.movement is not a string');
+
+    Object.assign(this, params);
+
+    this.tickMs = params.fullCloseMs / 100;
+
+    this.status = params.status || 0;
+    this.movement = params.movement || 'stop';
+
+    rpio.open(this.powerGpio, rpio.OUTPUT, rpio.HIGH);
+    rpio.open(this.directionGpio, rpio.OUTPUT, rpio.HIGH);
+
+    if(this.movement) {
+      this[this.movement]();
+    }
+  }
+
+  stop() {
+    this.logger.debug(`Shutter.stop at ${this.location}`);
+
+    if(this.movement === 'stop') {
+      return;
+    }
+
+    this.movement = 'stop';
+    this.powerOff();
+    this.onStop();
+  }
+
+  async up() {
+    this.logger.debug(`Shutter.up at ${this.location}`);
+
+    if(this.movement === 'up') {
+      return;
+    }
+
+    this.movement = 'up';
+    this.directionUp();
+    this.powerOn();
+
+    while(this.movement === 'up') {
+      await delay(this.tickMs);
+
+      this.status--;
+
+      this.onStatusUpdate(this.status);
+
+      this.logger.trace(`Shutter.up at ${this.location} ${this.status}%`);
+
+      if(this.status <= 0) {
+        this.logger.debug(`Shutter.up at ${this.location} max reached`);
+        this.stop();
+        this.onStatusUpdate(0);
+      }
+    }
+  }
+
+  async down() {
+    this.logger.debug(`Shutter.down at ${this.location}`);
+
+    if(this.movement === 'down') {
+      return;
+    }
+
+    this.movement = 'down';
+    this.directionDown();
+    this.powerOn();
+
+    while(this.movement === 'down') {
+      await delay(this.tickMs);
+
+      this.status++;
+
+      this.onStatusUpdate(this.status);
+
+      this.logger.trace(`Shutter.down at ${this.location} ${this.status}%`);
+
+      if(this.status >= 100) {
+        this.logger.debug(`Shutter.down at ${this.location} max reached`);
+        this.stop();
+        this.onStatusUpdate(100);
+      }
+    }
+  }
+
+  powerOn() {
+    this.logger.warn(`Shutter.powerOn at ${this.location} - ${this.powerGpio} -> LOW`);
+    rpio.write(this.powerGpio, rpio.LOW);
+  }
+
+  powerOff() {
+    this.logger.warn(`Shutter.powerOff at ${this.location} - ${this.powerGpio} -> HIGH`);
+    rpio.write(this.powerGpio, rpio.HIGH);
+  }
+
+  directionUp() {
+    this.logger.warn(`Shutter.directionUp at ${this.location} - ${this.powerGpio} -> HIGH`);
+    rpio.write(this.directionGpio, rpio.HIGH);
+  }
+
+  directionDown() {
+    this.logger.warn(`Shutter.directionDown at ${this.location} - ${this.powerGpio} -> LOW`);
+    rpio.write(this.directionGpio, rpio.LOW);
+  }
+}
+
+module.exports = Shutter;

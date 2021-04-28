@@ -1,0 +1,22 @@
+{
+  "name": "smart-home-shared",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Joachim Haecker-Becker",
+  "license": "ISC",
+  "dependencies": {
+    "async-mqtt": "^2.6.1",
+    "check-types-2": "11.4.0",
+    "delay": "^5.0.0",
+    "lodash": "^4.17.21",
+    "pigpio-dht": "^1.1.1",
+    "rpio": "^2.4.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.24.0",
+    "eslint-config-es": "^3.28.27",
+    "eslint-plugin-json": "^2.1.2",
+    "please-release-me": "^2.1.3"
+  }
+}
