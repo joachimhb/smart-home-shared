@@ -9,6 +9,8 @@ class DHT22 {
     check.assert.number(params.gpio, 'params.gpio is not a number');
     check.assert.string(params.location, 'params.location is not a string');
     check.assert.object(params.logger, 'params.logger is not an object');
+    check.assert.function(params.onHumidityChange, 'params.onHumidityChange is not a function');
+    check.assert.function(params.onTemperatureChange, 'params.onTemperatureChange is not a function');
 
     Object.assign(this, params);
 

@@ -27,6 +27,8 @@ class Shutter {
     rpio.open(this.powerGpio, rpio.OUTPUT, rpio.HIGH);
     rpio.open(this.directionGpio, rpio.OUTPUT, rpio.HIGH);
 
+    this.logger.debug(`Initiated Shutter at [${this.location}]: power[${this.powerGpio}] / direction[${this.directionGpio}] - ${this.status}/${this.movement}`);
+
     if(this.movement) {
       this[this.movement]();
     }
@@ -101,22 +103,22 @@ class Shutter {
   }
 
   powerOn() {
-    this.logger.warn(`Shutter.powerOn at ${this.location} - ${this.powerGpio} -> LOW`);
+    this.logger.debug(`Shutter.powerOn at ${this.location} - ${this.powerGpio} -> LOW`);
     rpio.write(this.powerGpio, rpio.LOW);
   }
 
   powerOff() {
-    this.logger.warn(`Shutter.powerOff at ${this.location} - ${this.powerGpio} -> HIGH`);
+    this.logger.debug(`Shutter.powerOff at ${this.location} - ${this.powerGpio} -> HIGH`);
     rpio.write(this.powerGpio, rpio.HIGH);
   }
 
   directionUp() {
-    this.logger.warn(`Shutter.directionUp at ${this.location} - ${this.powerGpio} -> HIGH`);
+    this.logger.debug(`Shutter.directionUp at ${this.location} - ${this.directionGpio} -> HIGH`);
     rpio.write(this.directionGpio, rpio.HIGH);
   }
 
   directionDown() {
-    this.logger.warn(`Shutter.directionDown at ${this.location} - ${this.powerGpio} -> LOW`);
+    this.logger.debug(`Shutter.directionDown at ${this.location} - ${this.directionGpio} -> LOW`);
     rpio.write(this.directionGpio, rpio.LOW);
   }
 }
