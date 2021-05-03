@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "description": "",
   "main": "index.js",
-  "author": "Joachim Haecker-Becker",
+  "author": "joachim.haecker-becker@arcor.de",
   "license": "MIT",
   "dependencies": {
     "async-mqtt": "^2.6.1",
@@ -14,9 +14,13 @@
     "rpio": "^2.4.2"
   },
   "devDependencies": {
-    "@joachimhb/bot": "git+https://github.com/joachimhb/bot.git#0.0.7",
+    "@joachimhb/bot": "git+https://github.com/joachimhb/bot.git#0.1.0",
     "eslint": "^7.24.0",
     "eslint-config-es": "^3.28.27",
     "eslint-plugin-json": "^2.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joachimhb/smart-home-shared.git"
   }
 }
