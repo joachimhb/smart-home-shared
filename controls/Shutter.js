@@ -24,6 +24,13 @@ class Shutter {
     this.status = params.status || 0;
     this.movement = params.movement || 'stop';
 
+    if(this.movement === 'stop') {
+      this.power = 'off';
+    } else {
+      this.power = 'on';
+      this.direction = this.movement;
+    }
+
     rpio.open(this.powerGpio, rpio.OUTPUT, rpio.HIGH);
     rpio.open(this.directionGpio, rpio.OUTPUT, rpio.HIGH);
 
@@ -66,7 +73,7 @@ class Shutter {
 
       this.logger.trace(`Shutter.up at ${this.location} ${this.status}%`);
 
-      if(this.status <= 0) {
+      if(this.status < 0) {
         this.logger.debug(`Shutter.up at ${this.location} max reached`);
         this.stop();
         this.onStatusUpdate(0);
@@ -94,7 +101,7 @@ class Shutter {
 
       this.logger.trace(`Shutter.down at ${this.location} ${this.status}%`);
 
-      if(this.status >= 100) {
+      if(this.status > 100) {
         this.logger.debug(`Shutter.down at ${this.location} max reached`);
         this.stop();
         this.onStatusUpdate(100);
@@ -103,23 +110,35 @@ class Shutter {
   }
 
   powerOn() {
-    this.logger.debug(`Shutter.powerOn at ${this.location} - ${this.powerGpio} -> LOW`);
-    rpio.write(this.powerGpio, rpio.LOW);
+    if(this.power !== 'on') {
+      this.logger.debug(`Shutter.powerOn at ${this.location} - ${this.powerGpio} -> LOW`);
+      rpio.write(this.powerGpio, rpio.LOW);
+      this.power = 'on';
+    }
   }
 
   powerOff() {
-    this.logger.debug(`Shutter.powerOff at ${this.location} - ${this.powerGpio} -> HIGH`);
-    rpio.write(this.powerGpio, rpio.HIGH);
+    if(this.power !== 'off') {
+      this.logger.debug(`Shutter.powerOff at ${this.location} - ${this.powerGpio} -> HIGH`);
+      rpio.write(this.powerGpio, rpio.HIGH);
+      this.power = 'off';
+    }
   }
 
   directionUp() {
-    this.logger.debug(`Shutter.directionUp at ${this.location} - ${this.directionGpio} -> HIGH`);
-    rpio.write(this.directionGpio, rpio.HIGH);
+    if(this.direction !== 'up') {
+      this.logger.debug(`Shutter.directionUp at ${this.location} - ${this.directionGpio} -> HIGH`);
+      rpio.write(this.directionGpio, rpio.HIGH);
+      this.direction = 'up';
+    }
   }
 
   directionDown() {
-    this.logger.debug(`Shutter.directionDown at ${this.location} - ${this.directionGpio} -> LOW`);
-    rpio.write(this.directionGpio, rpio.LOW);
+    if(this.direction !== 'down') {
+      this.logger.debug(`Shutter.directionDown at ${this.location} - ${this.directionGpio} -> LOW`);
+      rpio.write(this.directionGpio, rpio.LOW);
+      this.direction = 'down';
+    }
   }
 }
 

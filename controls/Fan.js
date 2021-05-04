@@ -22,6 +22,13 @@ class Fan {
 
     this.status = params.status || 'off';
 
+    if(this.status === 'off') {
+      this.power = 'off';
+    } else {
+      this.power = 'on';
+      this.speed = this.status;
+    }
+
     rpio.open(this.powerGpio, rpio.OUTPUT, rpio.HIGH);
     rpio.open(this.speedGpio, rpio.OUTPUT, rpio.HIGH);
 
@@ -45,23 +52,35 @@ class Fan {
   }
 
   powerOn() {
-    this.logger.debug(`Fan.powerOn at ${this.location} - ${this.powerGpio} -> LOW`);
-    rpio.write(this.powerGpio, rpio.LOW);
+    if(this.power !== 'on') {
+      this.logger.debug(`Fan.powerOn at ${this.location} - ${this.powerGpio} -> LOW`);
+      rpio.write(this.powerGpio, rpio.LOW);
+      this.power = 'on';
+    }
   }
 
   powerOff() {
-    this.logger.debug(`Fan.powerOff at ${this.location} - ${this.powerGpio} -> HIGH`);
-    rpio.write(this.powerGpio, rpio.HIGH);
+    if(this.power !== 'off') {
+      this.logger.debug(`Fan.powerOff at ${this.location} - ${this.powerGpio} -> HIGH`);
+      rpio.write(this.powerGpio, rpio.HIGH);
+      this.power = 'off';
+    }
   }
 
   minSpeed() {
-    this.logger.debug(`Fan.minSpeed at ${this.location} - ${this.speedGpio} -> HIGH`);
-    rpio.write(this.speedGpio, rpio.HIGH);
+    if(this.speed !== 'min') {
+      this.logger.debug(`Fan.minSpeed at ${this.location} - ${this.speedGpio} -> HIGH`);
+      rpio.write(this.speedGpio, rpio.HIGH);
+      this.speed = 'min';
+    }
   }
 
   maxSpeed() {
-    this.logger.debug(`Fan.maxSpeed at ${this.location} - ${this.speedGpio} -> LOW`);
-    rpio.write(this.speedGpio, rpio.LOW);
+    if(this.speed !== 'max') {
+      this.logger.debug(`Fan.maxSpeed at ${this.location} - ${this.speedGpio} -> LOW`);
+      rpio.write(this.speedGpio, rpio.LOW);
+      this.speed = 'max';
+    }
   }
 }
 
