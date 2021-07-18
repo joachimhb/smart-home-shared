@@ -53,7 +53,7 @@ class Shutter {
     this.onStop();
   }
 
-  async up() {
+  async up(options = {}) {
     this.logger.debug(`Shutter.up at ${this.location}`);
 
     if(this.movement === 'up') {
@@ -75,13 +75,17 @@ class Shutter {
 
       if(this.status < 0) {
         this.logger.debug(`Shutter.up at ${this.location} max reached`);
-        this.stop();
-        this.onStatusUpdate(0);
+        if(options.force) {
+          this.logger.warn(`Shutter.up with force`, this.status);
+        } else {
+          this.stop();
+          this.onStatusUpdate(0); 
+        }
       }
     }
   }
 
-  async down() {
+  async down(options = {}) {
     this.logger.debug(`Shutter.down at ${this.location}`);
 
     if(this.movement === 'down') {
@@ -103,8 +107,12 @@ class Shutter {
 
       if(this.status > 100) {
         this.logger.debug(`Shutter.down at ${this.location} max reached`);
-        this.stop();
-        this.onStatusUpdate(100);
+        if(options.force) {
+          this.logger.warn(`Shutter.down with force`, this.status);
+        } else {
+          this.stop();
+          this.onStatusUpdate(100);
+        }
       }
     }
   }
