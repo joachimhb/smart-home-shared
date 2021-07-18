@@ -1,6 +1,7 @@
 'use strict';
 
 // living rooms
+const shutterInit      = (room, shutter) => `room/${room}/shutters/${shutter}/init`;
 const shutterMovement  = (room, shutter) => `room/${room}/shutters/${shutter}/movement`;
 const shutterStatus    = (room, shutter) => `room/${room}/shutters/${shutter}/status`;
 const windowOpenStatus = (room, window) => `room/${room}/windows/${window}`;
@@ -20,6 +21,7 @@ const roomTemperature = room => `room/${room}/temperature`;
 const roomHumidity    = room => `room/${room}/humidity`;
 
 module.exports = {
+  shutterInit,
   shutterMovement,
   shutterStatus,
   windowOpenStatus,
