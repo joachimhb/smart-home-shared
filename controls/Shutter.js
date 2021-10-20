@@ -131,14 +131,14 @@ class Shutter {
     }
   }
 
-  moveTo(status) {
+  async moveTo(status, options = {}) {
     const diff = Math.abs(status - this.status);
     
     if(diff < 3) {
       return;
     }
 
-    if(status > this.status) {
+    if(this.status > status) {
       this.movement = 'up';
       this.directionUp();
       this.powerOn();
@@ -152,14 +152,11 @@ class Shutter {
 
         this.logger.trace(`Shutter.up at ${this.location} ${this.status}%`);
 
-        if(this.status < status) {
+        if(this.status <= status) {
           this.logger.debug(`Shutter.up at ${this.location} min of ${status} reached`);
-          if(options.force) {
-            this.logger.warn(`Shutter.up with force`, this.status);
-          } else {
-            this.stop();
-            this.onStatusUpdate(status); 
-          }
+          
+          this.stop();
+          this.onStatusUpdate(this.status); 
         }
       }
     } else {
@@ -176,14 +173,11 @@ class Shutter {
 
         this.logger.trace(`Shutter.down at ${this.location} ${this.status}%`);
 
-        if(this.status > status) {
+        if(this.status >= status) {
           this.logger.debug(`Shutter.down at ${this.location} max of ${status} reached`);
-          if(options.force) {
-            this.logger.warn(`Shutter.down with force`, this.status);
-          } else {
-            this.stop();
-            this.onStatusUpdate(status);
-          }
+          
+          this.stop();
+          this.onStatusUpdate(this.status);
         }
       }
     }
