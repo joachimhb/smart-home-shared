@@ -20,9 +20,11 @@ class Shutter {
     Object.assign(this, params);
 
     this.tickMs = params.fullCloseMs / 100;
+    this.max = 100;
 
     this.status = params.status || 0;
     this.movement = params.movement || 'stop';
+    this.lastMovement = 'down';
 
     if(this.movement === 'stop') {
       this.power = 'off';
@@ -56,6 +58,8 @@ class Shutter {
   async up(options = {}) {
     this.logger.debug(`Shutter.up at ${this.location}`);
 
+    this.lastMovement = 'up';
+
     if(this.movement === 'up') {
       return;
     }
@@ -74,7 +78,7 @@ class Shutter {
       this.logger.trace(`Shutter.up at ${this.location} ${this.status}%`);
 
       if(this.status < 0) {
-        this.logger.debug(`Shutter.up at ${this.location} max reached`);
+        this.logger.debug(`Shutter.up at ${this.location} min of 0 reached`);
         if(options.force) {
           this.logger.warn(`Shutter.up with force`, this.status);
         } else {
@@ -87,6 +91,8 @@ class Shutter {
 
   async down(options = {}) {
     this.logger.debug(`Shutter.down at ${this.location}`);
+
+    this.lastMovement = 'down';
 
     if(this.movement === 'down') {
       return;
@@ -105,17 +111,97 @@ class Shutter {
 
       this.logger.trace(`Shutter.down at ${this.location} ${this.status}%`);
 
-      if(this.status > 100) {
-        this.logger.debug(`Shutter.down at ${this.location} max reached`);
+      if(this.status > this.max) {
+        this.logger.debug(`Shutter.down at ${this.location} max of ${this.max} reached`);
         if(options.force) {
           this.logger.warn(`Shutter.down with force`, this.status);
         } else {
           this.stop();
-          this.onStatusUpdate(100);
+          this.onStatusUpdate(this.max);
         }
       }
     }
   }
+
+  setMax(value) {
+    this.max = value;
+
+    if(value < this.status) {
+      this.moveTo(value);
+    }
+  }
+
+  moveTo(status) {
+    const diff = Math.abs(status - this.status);
+    
+    if(diff < 3) {
+      return;
+    }
+
+    if(status > this.status) {
+      this.movement = 'up';
+      this.directionUp();
+      this.powerOn();
+
+      while(this.movement === 'up') {
+        await delay(this.tickMs);
+
+        this.status--;
+
+        this.onStatusUpdate(this.status);
+
+        this.logger.trace(`Shutter.up at ${this.location} ${this.status}%`);
+
+        if(this.status < status) {
+          this.logger.debug(`Shutter.up at ${this.location} min of ${status} reached`);
+          if(options.force) {
+            this.logger.warn(`Shutter.up with force`, this.status);
+          } else {
+            this.stop();
+            this.onStatusUpdate(status); 
+          }
+        }
+      }
+    } else {
+      this.movement = 'down';
+      this.directionDown();
+      this.powerOn();
+
+      while(this.movement === 'down') {
+        await delay(this.tickMs);
+
+        this.status++;
+
+        this.onStatusUpdate(this.status);
+
+        this.logger.trace(`Shutter.down at ${this.location} ${this.status}%`);
+
+        if(this.status > status) {
+          this.logger.debug(`Shutter.down at ${this.location} max of ${status} reached`);
+          if(options.force) {
+            this.logger.warn(`Shutter.down with force`, this.status);
+          } else {
+            this.stop();
+            this.onStatusUpdate(status);
+          }
+        }
+      }
+    }
+  }
+
+  async toggle(options = {}) {
+    if(this.movement !== 'stop') {
+      return await this.stop(options);
+    }
+
+    if(this.lastMovement === 'up') {
+      return await this.down(options);
+    }
+
+    if(this.lastMovement === 'down') {
+      return await this.up(options);
+    }
+  } 
 
   powerOn() {
     if(this.power !== 'on') {

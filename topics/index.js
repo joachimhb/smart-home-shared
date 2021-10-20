@@ -4,6 +4,7 @@
 const shutterInit      = (room, shutter) => `room/${room}/shutters/${shutter}/init`;
 const shutterMovement  = (room, shutter) => `room/${room}/shutters/${shutter}/movement`;
 const shutterStatus    = (room, shutter) => `room/${room}/shutters/${shutter}/status`;
+const shutterToggle    = (room, shutter) => `room/${room}/shutters/${shutter}/toggle`;
 const windowOpenStatus = (room, window) => `room/${room}/windows/${window}`;
 
 // bath rooms
@@ -16,7 +17,8 @@ const fanMinHumidityThreshold = (room, fan) => `room/${room}/fans/${fan}/minHumi
 const fanMaxHumidityThreshold = (room, fan) => `room/${room}/fans/${fan}/maxHumidityThreshold`;
 
 // room
-const lightStatus = (room, light) => `room/${room}/lights/${light}/status`;
+const lightStatus     = (room, light) => `room/${room}/lights/${light}/status`;
+const windowStatus    = (room, window) => `room/${room}/windows/${window}/status`;
 const roomTemperature = room => `room/${room}/temperature`;
 const roomHumidity    = room => `room/${room}/humidity`;
 
@@ -24,6 +26,7 @@ module.exports = {
   shutterInit,
   shutterMovement,
   shutterStatus,
+  shutterToggle,
   windowOpenStatus,
 
   fanControl,
@@ -34,6 +37,7 @@ module.exports = {
   fanMinHumidityThreshold,
   fanMaxHumidityThreshold,
 
+  windowStatus,
   lightStatus,
   roomTemperature,
   roomHumidity,
