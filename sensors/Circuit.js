@@ -3,6 +3,8 @@
 const check = require('check-types-2');
 const rpio  = require('rpio');
 
+rpio.init({mapping: 'gpio'});
+
 class Circuit {
   constructor(params) {
     check.assert.object(params, 'params is not an object');
@@ -38,7 +40,7 @@ class Circuit {
   }
 
   start() {
-    rpio.open(this.gpio, rpio.INPUT, rpio.PULL_DOWN);
+    rpio.open(this.gpio, rpio.INPUT, rpio.PULL_UP);
 
     // this.logger.trace(`Circuit initial read...`);
     // this.read();
