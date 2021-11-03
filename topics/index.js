@@ -5,6 +5,7 @@ const shutterInit      = (room, shutter) => `room/${room}/shutters/${shutter}/in
 const shutterMovement  = (room, shutter) => `room/${room}/shutters/${shutter}/movement`;
 const shutterStatus    = (room, shutter) => `room/${room}/shutters/${shutter}/status`;
 const shutterToggle    = (room, shutter) => `room/${room}/shutters/${shutter}/toggle`;
+const shutterLock      = (room, shutter) => `room/${room}/shutters/${shutter}/lock`;
 
 // bath rooms
 const fanControl   = (room, fan) => `room/${room}/fans/${fan}/control`;
@@ -26,6 +27,7 @@ module.exports = {
   shutterMovement,
   shutterStatus,
   shutterToggle,
+  shutterLock,
 
   fanControl,
   fanSpeed,

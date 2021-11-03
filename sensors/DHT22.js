@@ -27,20 +27,28 @@ class DHT22 {
     this.sensor.on('result', data => {
       let {humidity, temperature} = data;
 
-      humidity = Math.round(humidity * 10) / 10;
+      humidity = Math.ceil(humidity);
       temperature = Math.round(temperature * 10) / 10;
 
       this.logger.trace(`Humidity at ${this.location}: ${humidity}`);
       this.logger.trace(`Temperature at ${this.location}: ${temperature}`);
 
-      if(this.humidity !== humidity && typeof this.onHumidityChange === 'function') {
-        this.onHumidityChange(humidity);
+      const humidityDiff = Math.abs(this.humidity - humidity);
+
+      if(humidityDiff > 2) {
+        if(this.humidity !== humidity && typeof this.onHumidityChange === 'function') {
+          this.onHumidityChange(humidity);
+        }
       }
 
       this.humidity = humidity;
 
-      if(this.temperature !== temperature && typeof this.onTemperatureChange === 'function') {
-        this.onTemperatureChange(temperature);
+      const temperatureDiff = Math.abs(this.temperature - temperature);
+
+      if(temperatureDiff > 0.3) {
+        if(this.temperature !== temperature && typeof this.onTemperatureChange === 'function') {
+          this.onTemperatureChange(temperature);
+        }
       }
 
       this.temperature = temperature;
