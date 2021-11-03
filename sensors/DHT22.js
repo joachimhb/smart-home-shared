@@ -65,9 +65,13 @@ class DHT22 {
 
     this.logger.debug(`Starting DHT22 interval (${this.interval}ms) at ${this.location}...`);
 
-    setInterval(() => {
-      this.sensor.read();
-    }, this.interval);
+    this.interval = setInterval(this.sensor.read, this.interval);
+  }
+
+  stop() {
+    if(this.interval) {
+      clearInterval(this.interval);
+    }
   }
 }
 

@@ -47,7 +47,13 @@ class LightSensor {
     // this.read();
     this.logger.trace(`Starting LightSensor interval at ${this.location}...`);
 
-    setInterval(this.read, this.interval);
+    this.interval = setInterval(this.read, this.interval);
+  }
+
+  stop() {
+    if(this.interval) {
+      clearInterval(this.interval);
+    }
   }
 }
 
