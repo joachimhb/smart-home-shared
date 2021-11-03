@@ -19,8 +19,6 @@ class Circuit {
     this.read = this.read.bind(this);
 
     this.logger.debug(`Initializing Circuit at ${this.location} at [${this.gpio}] with interval ${this.interval}ms`);
-
-    this.start();
   }
 
   read() {
@@ -40,6 +38,8 @@ class Circuit {
   }
 
   start() {
+    this.active = true;
+
     rpio.open(this.gpio, rpio.INPUT, rpio.PULL_UP);
 
     // this.logger.trace(`Circuit initial read...`);
@@ -50,6 +50,10 @@ class Circuit {
   }
 
   stop() {
+    this.active = false;
+
+    this.logger.trace(`Stopping Circuit interval at ${this.location}...`);
+
     if(this.interval) {
       clearInterval(this.interval);
     }

@@ -22,8 +22,6 @@ class DHT22 {
 
     this.logger.debug(`Initializing DHT22 at ${this.location} at [${this.gpio}] with interval ${this.interval}ms`);
 
-    this.start();
-
     this.sensor.on('result', data => {
       let {humidity, temperature} = data;
 
@@ -60,9 +58,6 @@ class DHT22 {
   }
 
   start() {
-    // this.logger.trace(`DHT22 initial read...`);
-    // this.sensor.read();
-
     this.logger.debug(`Starting DHT22 interval (${this.interval}ms) at ${this.location}...`);
 
     this.interval = setInterval(this.sensor.read, this.interval);

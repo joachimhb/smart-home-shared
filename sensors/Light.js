@@ -20,8 +20,6 @@ class LightSensor {
     this.read = this.read.bind(this);
 
     this.logger.debug(`Initializing Light at ${this.location} at [${this.gpio}] with interval ${this.interval}ms`);
-
-    this.start();
   }
 
   read() {
