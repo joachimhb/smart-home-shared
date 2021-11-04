@@ -2,7 +2,7 @@
 
 const Circuit = require('../sensors/Circuit');
 
-class Switch {
+class Button {
   constructor(params) {
     check.assert.object(params, 'params is not an object');
     check.assert.number(params.gpio, 'params.gpio is not a number');
@@ -13,7 +13,7 @@ class Switch {
 
     this.active = this.active === false ? false : true;
 
-    this.logger.debug(`Initializing Switch at ${this.location} at [${this.gpio}] with interval ${this.interval}ms - active: ${this.active}`);
+    this.logger.debug(`Initializing Button at ${this.location} at [${this.gpio}] with interval ${this.interval}ms - active: ${this.active}`);
 
     this.circuit = new Circuit({
       gpio: this.gpio,
@@ -40,4 +40,4 @@ class Switch {
   }
 }
 
-module.exports = Switch;
+module.exports = Button;

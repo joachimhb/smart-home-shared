@@ -6,9 +6,9 @@ const shutterMovement  = (room, shutter) => `room/${room}/shutters/${shutter}/mo
 const shutterStatus    = (room, shutter) => `room/${room}/shutters/${shutter}/status`;
 const shutterToggle    = (room, shutter) => `room/${room}/shutters/${shutter}/toggle`;
 
-const switchOpen       = (room, shutter) => `room/${room}/switch/${shutter}/open`;
-const switchClosed     = (room, shutter) => `room/${room}/switch/${shutter}/closed`;
-const switchActive     = (room, shutter) => `room/${room}/switch/${shutter}/active`;
+const buttonOpen       = (room, shutter) => `room/${room}/button/${shutter}/open`;
+const buttonClosed     = (room, shutter) => `room/${room}/button/${shutter}/closed`;
+const buttonActive     = (room, shutter) => `room/${room}/button/${shutter}/active`;
 
 // bath rooms
 const fanControl   = (room, fan) => `room/${room}/fans/${fan}/control`;
@@ -31,9 +31,9 @@ module.exports = {
   shutterStatus,
   shutterToggle,
   
-  switchOpen,
-  switchClosed,
-  switchActive,
+  buttonOpen,
+  buttonClosed,
+  buttonActive,
 
   fanControl,
   fanSpeed,
@@ -44,7 +44,9 @@ module.exports = {
   fanMaxHumidityThreshold,
 
   windowStatus,
+  
   lightStatus,
+
   roomTemperature,
   roomHumidity,
 };
