@@ -16,7 +16,9 @@ class DHT22 {
 
     this.interval = this.interval || 5000;
     this.humidity = 0;
+    this.lastNotifiedHumidity = 0;
     this.temperature = 0;
+    this.lastNotifiedTemperature = 0;
 
     this.sensor = dht(this.gpio, 22);
 
@@ -31,20 +33,25 @@ class DHT22 {
       this.logger.trace(`Humidity at ${this.location}: ${humidity}`);
       this.logger.trace(`Temperature at ${this.location}: ${temperature}`);
 
-      const humidityDiff = Math.abs(this.humidity - humidity);
+      if(this.humidity !== humidity && typeof this.onHumidityChange === 'function') {
+        const humidityNotifyDiff = Math.abs(this.lastNotifiedHumidity - humidity);
 
-      if(humidityDiff > 2) {
-        if(this.humidity !== humidity && typeof this.onHumidityChange === 'function') {
+        if(humidityNotifyDiff > 2) {
+          this.lastNotifiedHumidity = humidity;
+
           this.onHumidityChange(humidity);
         }
       }
 
       this.humidity = humidity;
 
-      const temperatureDiff = Math.abs(this.temperature - temperature);
+      
+      if(this.temperature !== temperature && typeof this.onTemperatureChange === 'function') {
+        const temperatureNotifyDiff = Math.abs(this.lastNotifiedTemperature - temperature);
 
-      if(temperatureDiff > 0.3) {
-        if(this.temperature !== temperature && typeof this.onTemperatureChange === 'function') {
+        if(temperatureNotifyDiff > 0.3) {
+          this.lastNotifiedTemperature = temperature;
+
           this.onTemperatureChange(temperature);
         }
       }
