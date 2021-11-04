@@ -21,14 +21,14 @@ class Button {
       logger: this.logger,
       default: this.default,
       interval: this.interval,
-      onchange: value => {
+      onChange: value => {
         if(value === 'open') {
           if(typeof this.onOpen === 'function') {
             this.onClose();
           }
         } else if(value === 'open') {
           if(typeof this.onOpen === 'function') {
-            this.onClose();
+            this.onOpen();
           }
         }
       }
