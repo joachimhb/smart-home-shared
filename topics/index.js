@@ -6,9 +6,9 @@ const shutterMovement  = (room, shutter) => `room/${room}/shutters/${shutter}/mo
 const shutterStatus    = (room, shutter) => `room/${room}/shutters/${shutter}/status`;
 const shutterToggle    = (room, shutter) => `room/${room}/shutters/${shutter}/toggle`;
 
-const buttonOpen       = (room, shutter) => `room/${room}/button/${shutter}/open`;
-const buttonClosed     = (room, shutter) => `room/${room}/button/${shutter}/closed`;
-const buttonActive     = (room, shutter) => `room/${room}/button/${shutter}/active`;
+const buttonOpen       = (room, shutter) => `room/${room}/buttons/${shutter}/open`;
+const buttonClosed     = (room, shutter) => `room/${room}/buttons/${shutter}/closed`;
+const buttonActive     = (room, shutter) => `room/${room}/buttons/${shutter}/active`;
 
 // bath rooms
 const fanControl   = (room, fan) => `room/${room}/fans/${fan}/control`;
