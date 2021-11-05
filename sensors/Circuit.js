@@ -48,7 +48,7 @@ class Circuit {
 
     // this.logger.trace(`Circuit initial read...`);
     // this.read();
-    this.logger.trace(`Starting Circuit interval at ${this.location}...`);
+    this.logger.debug(`Starting Circuit interval at ${this.location}...`);
 
     this.readInterval = setInterval(this.read, this.interval);
   }
@@ -56,7 +56,7 @@ class Circuit {
   stop() {
     this.active = false;
 
-    this.logger.trace(`Stopping Circuit interval at ${this.location}...`);
+    this.logger.debug(`Stopping Circuit interval at ${this.location}...`);
 
     if(this.readInterval) {
       clearInterval(this.readInterval);

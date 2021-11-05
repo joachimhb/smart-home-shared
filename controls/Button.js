@@ -1,5 +1,7 @@
 'use strict';
 
+const check = require('check-types-2');
+
 const Circuit = require('../sensors/Circuit');
 
 class Button {
@@ -11,7 +13,7 @@ class Button {
 
     Object.assign(this, params);
 
-    this.logger.debug(`Initializing Button at ${this.location} at [${this.gpio}] with interval ${this.interval}ms - active: ${this.active}`);
+    this.logger.debug(`Initializing Button at ${this.location} at [${this.gpio}] with interval ${this.interval}ms`);
 
     this.circuit = new Circuit({
       gpio: this.gpio,
@@ -20,9 +22,9 @@ class Button {
       default: this.default,
       interval: this.interval,
       onChange: value => {
-        if(value === 'open') {
-          if(typeof this.onOpen === 'function') {
-            this.onClose();
+        if(value === 'closed') {
+          if(typeof this.onClosed === 'function') {
+            this.onClosed();
           }
         } else if(value === 'open') {
           if(typeof this.onOpen === 'function') {
