@@ -11,8 +11,6 @@ class Button {
 
     Object.assign(this, params);
 
-    this.active = this.active === false ? false : true;
-
     this.logger.debug(`Initializing Button at ${this.location} at [${this.gpio}] with interval ${this.interval}ms - active: ${this.active}`);
 
     this.circuit = new Circuit({
@@ -33,10 +31,22 @@ class Button {
         }
       }
     });
+  }
 
+  start() {
     if(this.active) {
-      this.circuit.start();
+      return;
     }
+
+    this.active = true;
+
+    this.circuit.start();
+  }
+
+  stop() {
+    this.active = false;
+
+    this.circuit.stop();
   }
 }
 

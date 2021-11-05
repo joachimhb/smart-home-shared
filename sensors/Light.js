@@ -41,16 +41,22 @@ class LightSensor {
   }
 
   start() {
-    // this.logger.trace(`LightSensor initial read...`);
-    // this.read();
+    if(this.active) {
+      return;
+    }
+
+    this.active = true;
+
     this.logger.trace(`Starting LightSensor interval at ${this.location}...`);
 
-    this.interval = setInterval(this.read, this.interval);
+    this.readInterval = setInterval(this.read, this.interval);
   }
 
   stop() {
+    this.active = false;
+
     if(this.interval) {
-      clearInterval(this.interval);
+      clearInterval(this.readInterval);
     }
   }
 }

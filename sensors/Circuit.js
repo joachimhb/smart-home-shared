@@ -38,6 +38,10 @@ class Circuit {
   }
 
   start() {
+    if(this.active) {
+      return;
+    }
+
     this.active = true;
 
     rpio.open(this.gpio, rpio.INPUT, rpio.PULL_UP);
@@ -46,7 +50,7 @@ class Circuit {
     // this.read();
     this.logger.trace(`Starting Circuit interval at ${this.location}...`);
 
-    this.interval = setInterval(this.read, this.interval);
+    this.readInterval = setInterval(this.read, this.interval);
   }
 
   stop() {
@@ -54,8 +58,8 @@ class Circuit {
 
     this.logger.trace(`Stopping Circuit interval at ${this.location}...`);
 
-    if(this.interval) {
-      clearInterval(this.interval);
+    if(this.readInterval) {
+      clearInterval(this.readInterval);
     }
   }
 }

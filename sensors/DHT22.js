@@ -65,14 +65,22 @@ class DHT22 {
   }
 
   start() {
+    if(this.active) {
+      return;
+    }
+
+    this.active = true;
+
     this.logger.debug(`Starting DHT22 interval (${this.interval}ms) at ${this.location}...`);
 
-    this.interval = setInterval(this.sensor.read, this.interval);
+    this.readInterval = setInterval(this.sensor.read, this.interval);
   }
 
   stop() {
-    if(this.interval) {
-      clearInterval(this.interval);
+    this.active = false;
+
+    if(this.readInterval) {
+      clearInterval(this.readInterval);
     }
   }
 }
