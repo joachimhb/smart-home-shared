@@ -30,7 +30,8 @@ class Circuit {
 
     // rpio.close(this.gpio);
 
-    if(this.value !== value && typeof this.onChange === 'function') {
+    if(this.lastNotifiedValue !== value && typeof this.onChange === 'function') {
+      this.lastNotifiedValue = value;
       this.onChange(value);
     }
 

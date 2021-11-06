@@ -124,6 +124,7 @@ class Shutter {
   }
 
   setMax(value) {
+    this.logger.trace(`Shutter.up at ${this.location} setMax to ${value}%`);
     this.max = value;
 
     if(value < this.status) {

@@ -5,6 +5,7 @@ const shutterInit      = (room, shutter) => `room/${room}/shutters/${shutter}/in
 const shutterMovement  = (room, shutter) => `room/${room}/shutters/${shutter}/movement`;
 const shutterStatus    = (room, shutter) => `room/${room}/shutters/${shutter}/status`;
 const shutterToggle    = (room, shutter) => `room/${room}/shutters/${shutter}/toggle`;
+const shutterMoveTo    = (room, shutter) => `room/${room}/shutters/${shutter}/moveTo`;
 
 const buttonOpen       = (room, shutter) => `room/${room}/buttons/${shutter}/open`;
 const buttonClosed     = (room, shutter) => `room/${room}/buttons/${shutter}/closed`;
@@ -30,6 +31,7 @@ module.exports = {
   shutterMovement,
   shutterStatus,
   shutterToggle,
+  shutterMoveTo,
   
   buttonOpen,
   buttonClosed,
