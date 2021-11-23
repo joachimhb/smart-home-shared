@@ -27,7 +27,7 @@ class DHT22 {
     this.sensor.on('result', data => {
       let {humidity, temperature} = data;
 
-      humidity = Math.ceil(humidity);
+      humidity = Math.round(humidity);
       temperature = Math.round(temperature * 10) / 10;
 
       this.logger.trace(`Humidity at ${this.location}: ${humidity}`);
@@ -36,7 +36,7 @@ class DHT22 {
       if(this.humidity !== humidity && typeof this.onHumidityChange === 'function') {
         const humidityNotifyDiff = Math.abs(this.lastNotifiedHumidity - humidity);
 
-        if(humidityNotifyDiff > 2) {
+        if(humidityNotifyDiff >= 2) {
           this.lastNotifiedHumidity = humidity;
 
           this.onHumidityChange(humidity);
@@ -49,7 +49,7 @@ class DHT22 {
       if(this.temperature !== temperature && typeof this.onTemperatureChange === 'function') {
         const temperatureNotifyDiff = Math.abs(this.lastNotifiedTemperature - temperature);
 
-        if(temperatureNotifyDiff > 0.3) {
+        if(temperatureNotifyDiff >= 0.2) {
           this.lastNotifiedTemperature = temperature;
 
           this.onTemperatureChange(temperature);
