@@ -1,9 +1,9 @@
 'use strict';
 
 const check = require('check-types-2');
-const rpio  = require('rpio');
+const pigpio  = require('pigpio');
 
-rpio.init({mapping: 'gpio'});
+const {Gpio} = pigpio;
 
 class Circuit {
   constructor(params) {
@@ -14,54 +14,63 @@ class Circuit {
 
     Object.assign(this, params);
 
-    this.interval = this.interval || 500;
     this.value = this.default || 'open';
-    this.read = this.read.bind(this);
 
-    this.logger.debug(`Initializing Circuit at ${this.location} at [${this.gpio}] with interval ${this.interval}ms`);
+    this.control = new Gpio(this.gpio, {
+      mode:       Gpio.INPUT,
+      pullUpDown: Gpio.PUD_UP,
+      alert:      true,
+//      edge:       Gpio.EITHER_EDGE, // interrupt on either edge
+//      timeout:    xxx milliseconds  // interrupt only
+    });
+
+    this.handleAlert = this.handleAlert.bind(this);
+
+    this.control.on('alert', this.handleAlert);
+
+    this.lastNotifiedValue = null;
+    this.lastAlertDate = null;
+
+    this.logger.debug(`Initializing Circuit at ${this.location} at [${this.gpio}]`);
   }
 
-  read() {
-    const bool = !rpio.read(this.gpio);
+  handleAlert(state) {
+    const now = new Date();
 
-    const value = bool ? 'closed' : 'open';
+    const value = state ? 'closed' : 'open';
+
+    const sinceLast = now - this.lastAlertDate;
+
+    this.lastAlertDate = now;
+
+    this.logger.trace(`Circuit at ${this.location} is: ${value} - since last: ${sinceLast}`);
+
+    if(!this.active) {
+      this.logger.warn(`Circuit at ${this.location} is inactive`);
+
+      return null;
+    }
+    
+    // Debounce buttons causing alerts within a short time period.
+    if(sinceLast < 100) { // 0.1 second
+      // within debounceTime limit
+      return;
+    }
 
     this.logger.trace(`Circuit at ${this.location} is: ${value}`);
-
-    // rpio.close(this.gpio);
 
     if(this.lastNotifiedValue !== value && typeof this.onChange === 'function') {
       this.lastNotifiedValue = value;
       this.onChange(value);
     }
-
-    this.value = value;
   }
 
   start() {
-    if(this.active) {
-      return;
-    }
-
     this.active = true;
-
-    rpio.open(this.gpio, rpio.INPUT, rpio.PULL_UP);
-
-    // this.logger.trace(`Circuit initial read...`);
-    // this.read();
-    this.logger.debug(`Starting Circuit interval at ${this.location}...`);
-
-    this.readInterval = setInterval(this.read, this.interval);
   }
 
   stop() {
     this.active = false;
-
-    this.logger.debug(`Stopping Circuit interval at ${this.location}...`);
-
-    if(this.readInterval) {
-      clearInterval(this.readInterval);
-    }
   }
 }
 

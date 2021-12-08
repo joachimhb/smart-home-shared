@@ -20,11 +20,10 @@ class Button {
       location: this.location,
       logger: this.logger,
       default: this.default,
-      interval: this.interval,
       onChange: value => {
         if(value === 'closed') {
-          if(typeof this.onClosed === 'function') {
-            this.onClosed();
+          if(typeof this.onClose === 'function') {
+            this.onClose();
           }
         } else if(value === 'open') {
           if(typeof this.onOpen === 'function') {
