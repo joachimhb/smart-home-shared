@@ -13,7 +13,7 @@ class Button {
 
     Object.assign(this, params);
 
-    this.logger.debug(`Initializing Button at ${this.location} at [${this.gpio}] with interval ${this.interval}ms`);
+    this.logger.debug(`Initializing Button at ${this.location} at [${this.gpio}]`);
 
     this.circuit = new Circuit({
       gpio: this.gpio,
