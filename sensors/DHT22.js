@@ -14,10 +14,10 @@ class DHT22 {
 
     Object.assign(this, params);
 
-    this.interval = this.interval || 5000;
-    this.humidity = 0;
-    this.lastNotifiedHumidity = 0;
-    this.temperature = 0;
+    this.interval                = this.interval || 5000;
+    this.humidity                = 0;
+    this.lastNotifiedHumidity    = 0;
+    this.temperature             = 0;
     this.lastNotifiedTemperature = 0;
 
     this.sensor = dht(this.gpio, 22);

@@ -48,7 +48,7 @@ class Circuit {
     if(!this.active) {
       this.logger.warn(`Circuit at ${this.location} is inactive`);
 
-      return null;
+      return;
     }
     
     // Debounce buttons causing alerts within a short time period.

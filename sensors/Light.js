@@ -16,8 +16,8 @@ class LightSensor {
     Object.assign(this, params);
 
     this.interval = this.interval || 2000;
-    this.value = 'off';
-    this.read = this.read.bind(this);
+    this.value    = 'off';
+    this.read     = this.read.bind(this);
 
     this.logger.debug(`Initializing Light at ${this.location} at [${this.gpio}] with interval ${this.interval}ms`);
   }

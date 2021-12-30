@@ -1,8 +1,9 @@
 'use strict';
 
+const     _ = require('lodash');
 const check = require('check-types-2');
 const delay = require('delay');
-const rpio = require('rpio');
+const rpio  = require('rpio');
 
 rpio.init({mapping: 'gpio'});
 
@@ -19,11 +20,13 @@ class Shutter {
 
     Object.assign(this, params);
 
-    this.tickMs = params.fullCloseMs / 100;
-    this.max = 100;
+    this.onStatusUpdate   = this.onStatusUpdate   || _.noop;
+    this.onMovementUpdate = this.onMovementUpdate || _.noop;
 
-    this.status = params.status || 0;
-    this.movement = params.movement || 'stop';
+    this.tickMs       = params.fullCloseMs / 100;
+    this.max          = 100;
+    this.status       = params.status || 0;
+    this.movement     = params.movement || 'stop';
     this.lastMovement = 'down';
 
     if(this.movement === 'stop') {
@@ -51,8 +54,8 @@ class Shutter {
     }
 
     this.movement = 'stop';
+    this.onMovementUpdate(this.movement);
     this.powerOff();
-    this.onStop();
   }
 
   async up(options = {}) {
@@ -65,6 +68,7 @@ class Shutter {
     }
 
     this.movement = 'up';
+    this.onMovementUpdate(this.movement);
     this.directionUp();
     this.powerOn();
 
@@ -99,6 +103,7 @@ class Shutter {
     }
 
     this.movement = 'down';
+    this.onMovementUpdate(this.movement);
     this.directionDown();
     this.powerOn();
 
@@ -127,7 +132,7 @@ class Shutter {
     this.logger.trace(`Shutter.up at ${this.location} setMax to ${value}%`);
     this.max = value;
 
-    if(value < this.status) {
+    if(this.max < this.status) {
       this.moveTo(value);
     }
   }
@@ -140,7 +145,9 @@ class Shutter {
     }
 
     if(this.status > status) {
+      this.lastMovement = 'up';
       this.movement = 'up';
+      this.onMovementUpdate(this.movement);
       this.directionUp();
       this.powerOn();
 
@@ -161,7 +168,9 @@ class Shutter {
         }
       }
     } else {
+      this.lastMovement = 'down';
       this.movement = 'down';
+      this.onMovementUpdate(this.movement);
       this.directionDown();
       this.powerOn();
 
