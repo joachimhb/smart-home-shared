@@ -37,7 +37,7 @@ class Circuit {
   handleAlert(state) {
     const now = new Date();
 
-    const value = state ? 'closed' : 'open';
+    const value = state ? 'open' : 'closed';
 
     const sinceLast = now - this.lastAlertDate;
 
