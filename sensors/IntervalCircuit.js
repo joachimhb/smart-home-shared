@@ -5,7 +5,7 @@ const rpio  = require('rpio');
 
 rpio.init({mapping: 'gpio'});
 
-class Circuit {
+class IntervalCircuit {
   constructor(params) {
     check.assert.object(params, 'params is not an object');
     check.assert.number(params.gpio, 'params.gpio is not a number');
@@ -18,7 +18,7 @@ class Circuit {
     this.value = this.default || 'open';
     this.read = this.read.bind(this);
 
-    this.logger.debug(`Initializing Circuit at ${this.location} at [${this.gpio}] with interval ${this.interval}ms`);
+    this.logger.debug(`Initializing IntervalCircuit at ${this.location} at [${this.gpio}] with interval ${this.interval}ms`);
   }
 
   read() {
@@ -26,7 +26,7 @@ class Circuit {
 
     const value = bool ? 'closed' : 'open';
 
-    this.logger.trace(`Circuit at ${this.location} is: ${value}`);
+    this.logger.trace(`IntervalCircuit at ${this.location} is: ${value}`);
 
     // rpio.close(this.gpio);
 
@@ -47,9 +47,9 @@ class Circuit {
 
     rpio.open(this.gpio, rpio.INPUT, rpio.PULL_UP);
 
-    // this.logger.trace(`Circuit initial read...`);
+    // this.logger.trace(`IntervalCircuit initial read...`);
     // this.read();
-    this.logger.debug(`Starting Circuit interval at ${this.location}...`);
+    this.logger.debug(`Starting IntervalCircuit interval at ${this.location}...`);
 
     this.readInterval = setInterval(this.read, this.interval);
   }
@@ -57,7 +57,7 @@ class Circuit {
   stop() {
     this.active = false;
 
-    this.logger.debug(`Stopping Circuit interval at ${this.location}...`);
+    this.logger.debug(`Stopping IntervalCircuit interval at ${this.location}...`);
 
     if(this.readInterval) {
       clearInterval(this.readInterval);
@@ -65,4 +65,4 @@ class Circuit {
   }
 }
 
-module.exports = Circuit;
+module.exports = IntervalCircuit;

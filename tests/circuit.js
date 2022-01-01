@@ -4,7 +4,7 @@ const init = require('./init');
 
 const Circuit = require('../sensors/Circuit');
 
-const gpio = 3;
+const gpio = 16;
 
 (async function() {
   console.log(`Starting circuit test`);
@@ -17,7 +17,7 @@ const gpio = 3;
     const circuit = new Circuit({
       logger,
       location: `TEST`,
-      interval: 150,
+      // interval: 150,
       gpio: gpio,
       onChange: async value => {
         logger.info('CHANGE', value);

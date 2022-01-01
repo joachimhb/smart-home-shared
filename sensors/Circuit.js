@@ -20,8 +20,8 @@ class Circuit {
       mode:       Gpio.INPUT,
       pullUpDown: Gpio.PUD_UP,
       alert:      true,
-//      edge:       Gpio.EITHER_EDGE, // interrupt on either edge
-//      timeout:    xxx milliseconds  // interrupt only
+     edge:       Gpio.EITHER_EDGE, // interrupt on either edge
+    //  timeout:    xxx milliseconds  // interrupt only
     });
 
     this.handleAlert = this.handleAlert.bind(this);

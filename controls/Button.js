@@ -3,6 +3,7 @@
 const check = require('check-types-2');
 
 const Circuit = require('../sensors/Circuit');
+const IntervalCircuit = require('../sensors/IntervalCircuit');
 
 class Button {
   constructor(params) {
@@ -15,11 +16,12 @@ class Button {
 
     this.logger.debug(`Initializing Button at ${this.location} at [${this.gpio}]`);
 
-    this.circuit = new Circuit({
+    const circuitParams = {
       gpio: this.gpio,
       location: this.location,
       logger: this.logger,
       default: this.default,
+      interval: this.interval,
       onChange: value => {
         if(value === 'closed') {
           if(typeof this.onClose === 'function') {
@@ -31,7 +33,13 @@ class Button {
           }
         }
       }
-    });
+    };
+
+    if(params.interval) {
+      this.circuit = new IntervalCircuit(circuitParams);
+    } else {
+      this.circuit = new Circuit(circuitParams);
+    }
   }
 
   start() {

@@ -8,13 +8,10 @@ const rpio = require('rpio');
 
 rpio.init({mapping: 'gpio'});
 
-const gpio = 3;
-const transGpio = 2;
+const gpio = 16;
 
 (async function() {
   console.log(`Starting button test`);
-
-  rpio.open(transGpio, rpio.OUTPUT, rpio.HIGH);
 
   try {
     const {logger} = await init();
@@ -25,12 +22,11 @@ const transGpio = 2;
       logger,
       location: `TEST`,
       gpio: gpio,
+      interval: 100,
       onClose: async () => {
-        rpio.write(transGpio, rpio.HIGH);
         logger.info('CLOSED');
       },
       onOpen: async () => {
-        rpio.write(transGpio, rpio.LOW);
         logger.info('OPENED');
       }
     });
