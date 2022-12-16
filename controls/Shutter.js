@@ -128,70 +128,70 @@ class Shutter {
     }
   }
 
-  setMax(value) {
-    this.logger.trace(`Shutter.up at ${this.location} setMax to ${value}%`);
-    this.max = value;
+  // setMax(value) {
+  //   this.logger.trace(`Shutter.up at ${this.location} setMax to ${value}%`);
+  //   this.max = value;
 
-    if(this.max < this.status) {
-      this.moveTo(value);
-    }
-  }
+  //   if(this.max < this.status) {
+  //     this.moveTo(value);
+  //   }
+  // }
 
-  async moveTo(status, options = {}) {
-    const diff = Math.abs(status - this.status);
+  // async moveTo(status, options = {}) {
+  //   const diff = Math.abs(status - this.status);
     
-    if(diff < 3) {
-      return;
-    }
+  //   if(diff < 3) {
+  //     return;
+  //   }
 
-    if(this.status > status) {
-      this.lastMovement = 'up';
-      this.movement = 'up';
-      this.onMovementUpdate(this.movement);
-      await this._directionUp();
-      await this._powerOn();
+  //   if(this.status > status) {
+  //     this.lastMovement = 'up';
+  //     this.movement = 'up';
+  //     this.onMovementUpdate(this.movement);
+  //     await this._directionUp();
+  //     await this._powerOn();
 
-      while(this.movement === 'up') {
-        await delay(this.tickMs);
+  //     while(this.movement === 'up') {
+  //       await delay(this.tickMs);
 
-        this.status--;
+  //       this.status--;
 
-        this.onStatusUpdate(this.status);
+  //       this.onStatusUpdate(this.status);
 
-        this.logger.trace(`Shutter.up at ${this.location} ${this.status}%`);
+  //       this.logger.trace(`Shutter.up at ${this.location} ${this.status}%`);
 
-        if(this.status <= status) {
-          this.logger.debug(`Shutter.up at ${this.location} min of ${status} reached`);
+  //       if(this.status <= status) {
+  //         this.logger.debug(`Shutter.up at ${this.location} min of ${status} reached`);
           
-          this.stop();
-          this.onStatusUpdate(this.status); 
-        }
-      }
-    } else {
-      this.lastMovement = 'down';
-      this.movement = 'down';
-      this.onMovementUpdate(this.movement);
-      await this._directionDown();
-      await this._powerOn();
+  //         this.stop();
+  //         this.onStatusUpdate(this.status); 
+  //       }
+  //     }
+  //   } else {
+  //     this.lastMovement = 'down';
+  //     this.movement = 'down';
+  //     this.onMovementUpdate(this.movement);
+  //     await this._directionDown();
+  //     await this._powerOn();
 
-      while(this.movement === 'down') {
-        await delay(this.tickMs);
+  //     while(this.movement === 'down') {
+  //       await delay(this.tickMs);
 
-        this.status++;
+  //       this.status++;
 
-        this.onStatusUpdate(this.status);
+  //       this.onStatusUpdate(this.status);
 
-        this.logger.trace(`Shutter.down at ${this.location} ${this.status}%`);
+  //       this.logger.trace(`Shutter.down at ${this.location} ${this.status}%`);
 
-        if(this.status >= status) {
-          this.logger.debug(`Shutter.down at ${this.location} max of ${status} reached`);
+  //       if(this.status >= status) {
+  //         this.logger.debug(`Shutter.down at ${this.location} max of ${status} reached`);
           
-          this.stop();
-          this.onStatusUpdate(this.status);
-        }
-      }
-    }
-  }
+  //         this.stop();
+  //         this.onStatusUpdate(this.status);
+  //       }
+  //     }
+  //   }
+  // }
 
   async toggle(options = {}) {
     if(this.movement !== 'stop') {
@@ -212,7 +212,7 @@ class Shutter {
       this.logger.debug(`Shutter._powerOn at ${this.location} - ${this.powerGpio} -> LOW`);
       rpio.write(this.powerGpio, rpio.LOW);
       this.power = 'on';
-      await delay(20);
+      await delay(50);
     }
   }
 
@@ -221,8 +221,9 @@ class Shutter {
       this.logger.debug(`Shutter._powerOff at ${this.location} - ${this.powerGpio} -> HIGH`);
       rpio.write(this.powerGpio, rpio.HIGH);
       this.power = 'off';
-      await delay(20);
-      rpio.write(this.directionGpio, rpio.LOW);
+      await delay(50);
+      this.logger.debug(`Shutter._powerOff at ${this.location} - ${this.directionGpio} -> HIGH`);
+      rpio.write(this.directionGpio, rpio.HIGH);
     }
   }
 
@@ -231,7 +232,7 @@ class Shutter {
       this.logger.debug(`Shutter._directionUp at ${this.location} - ${this.directionGpio} -> HIGH`);
       rpio.write(this.directionGpio, rpio.HIGH);
       this.direction = 'up';
-      await delay(20);
+      await delay(50);
     }
   }
 
@@ -240,7 +241,7 @@ class Shutter {
       this.logger.debug(`Shutter._directionDown at ${this.location} - ${this.directionGpio} -> LOW`);
       rpio.write(this.directionGpio, rpio.LOW);
       this.direction = 'down';
-      await delay(20);
+      await delay(50);
     }
   }
 }
