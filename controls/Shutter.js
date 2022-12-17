@@ -128,14 +128,14 @@ class Shutter {
     }
   }
 
-  // setMax(value) {
-  //   this.logger.trace(`Shutter.up at ${this.location} setMax to ${value}%`);
-  //   this.max = value;
+  setMax(value) {
+    this.logger.trace(`Shutter.up at ${this.location} setMax to ${value}%`);
+    this.max = value;
 
-  //   if(this.max < this.status) {
-  //     this.moveTo(value);
-  //   }
-  // }
+    // if(this.max < this.status) {
+    //   this.moveTo(value);
+    // }
+  }
 
   // async moveTo(status, options = {}) {
   //   const diff = Math.abs(status - this.status);
