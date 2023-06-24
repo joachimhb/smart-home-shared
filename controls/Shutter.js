@@ -23,27 +23,36 @@ class Shutter {
     this.onStatusUpdate   = this.onStatusUpdate   || _.noop;
     this.onMovementUpdate = this.onMovementUpdate || _.noop;
 
-    this.tickMs       = params.fullCloseMs / 100;
-    this.max          = 100;
-    this.status       = params.status || 0;
-    this.movement     = params.movement || 'stop';
-    this.lastMovement = 'down';
+    this.tickMs         = params.fullCloseMs / 1000;
+    this.max            = 100;
+    this.status         = params.status || 0;
+    this.movement       = 'stop'; // params.movement || 'stop';
+    this.lastMovement   = 'down';
+    this.commandBlockMs = 1000;
 
-    if(this.movement === 'stop') {
-      this.power = 'off';
-    } else {
-      this.power = 'on';
-      this.direction = this.movement;
-    }
+    this.lastReportedStatus = this.status;
 
     rpio.open(this.powerGpio, rpio.OUTPUT, rpio.HIGH);
     rpio.open(this.directionGpio, rpio.OUTPUT, rpio.HIGH);
 
     this.logger.debug(`Initiated Shutter at [${this.location}]: power[${this.powerGpio}] / direction[${this.directionGpio}] - ${this.status}/${this.movement}`);
 
-    if(this.movement) {
-      this[this.movement]();
-    }
+    // if(this.movement === 'stop') {
+    //   this.power = 'off';
+    // }
+    //  else {
+    //   this.power = 'on';
+    //   this.direction = this.movement;
+    // }
+
+    // if(this.movement) {
+    //   this[this.movement]();
+    // }
+  }
+
+  setMax(value) {
+    this.logger.trace(`Shutter.up at ${this.location} setMax to ${value}%`);
+    this.max = value;
   }
 
   stop() {
@@ -61,23 +70,42 @@ class Shutter {
   async up(options = {}) {
     this.logger.debug(`Shutter.up at ${this.location}`);
 
-    this.lastMovement = 'up';
-
     if(this.movement === 'up') {
       return;
     }
 
+    if(this.commandBlocked) {
+      this.logger.debug(`Shutter.up at ${this.location} - BLOCKED`);
+      return;
+    }
+
+    this._setCommandBlock();
+
+    if(this.movement !== 'stop') {
+      return await this.stop();
+    }
+
+    this.lastMovement = 'up';
     this.movement = 'up';
     this.onMovementUpdate(this.movement);
-    this._directionUp();
+
+    await this._directionUp();
     await this._powerOn();
+
+    if(this.movementDelayMs) {
+      await delay(this.movementDelayMs);
+    }
 
     while(this.movement === 'up') {
       await delay(this.tickMs);
 
-      this.status--;
+      this.status -= 0.1;
 
-      this.onStatusUpdate(this.status);
+      const rounded = Math.round(this.status);
+
+      if(rounded !== this.lastReportedStatus) {
+        this.onStatusUpdate(rounded);
+      }
 
       this.logger.trace(`Shutter.up at ${this.location} ${this.status}%`);
 
@@ -96,23 +124,44 @@ class Shutter {
   async down(options = {}) {
     this.logger.debug(`Shutter.down at ${this.location}`);
 
-    this.lastMovement = 'down';
-
     if(this.movement === 'down') {
       return;
     }
 
+    if(this.commandBlocked) {
+      this.logger.debug(`Shutter.down at ${this.location} - BLOCKED`);
+      return;
+    }
+
+    this._setCommandBlock();
+
+    if(this.movement !== 'stop') {
+      return await this.stop();
+    }
+
+    this.lastMovement = 'down';
+    this.movement = 'down';
+
     this.movement = 'down';
     this.onMovementUpdate(this.movement);
+
     await this._directionDown();
     await this._powerOn();
+
+    if(this.movementDelayMs) {
+      await delay(this.movementDelayMs);
+    }
 
     while(this.movement === 'down') {
       await delay(this.tickMs);
 
-      this.status++;
+      this.status += 0.1;
 
-      this.onStatusUpdate(this.status);
+      const rounded = Math.round(this.status);
+
+      if(rounded !== this.lastReportedStatus) {
+        this.onStatusUpdate(rounded);
+      }
 
       this.logger.trace(`Shutter.down at ${this.location} ${this.status}%`);
 
@@ -128,71 +177,6 @@ class Shutter {
     }
   }
 
-  setMax(value) {
-    this.logger.trace(`Shutter.up at ${this.location} setMax to ${value}%`);
-    this.max = value;
-
-    // if(this.max < this.status) {
-    //   this.moveTo(value);
-    // }
-  }
-
-  // async moveTo(status, options = {}) {
-  //   const diff = Math.abs(status - this.status);
-    
-  //   if(diff < 3) {
-  //     return;
-  //   }
-
-  //   if(this.status > status) {
-  //     this.lastMovement = 'up';
-  //     this.movement = 'up';
-  //     this.onMovementUpdate(this.movement);
-  //     await this._directionUp();
-  //     await this._powerOn();
-
-  //     while(this.movement === 'up') {
-  //       await delay(this.tickMs);
-
-  //       this.status--;
-
-  //       this.onStatusUpdate(this.status);
-
-  //       this.logger.trace(`Shutter.up at ${this.location} ${this.status}%`);
-
-  //       if(this.status <= status) {
-  //         this.logger.debug(`Shutter.up at ${this.location} min of ${status} reached`);
-          
-  //         this.stop();
-  //         this.onStatusUpdate(this.status); 
-  //       }
-  //     }
-  //   } else {
-  //     this.lastMovement = 'down';
-  //     this.movement = 'down';
-  //     this.onMovementUpdate(this.movement);
-  //     await this._directionDown();
-  //     await this._powerOn();
-
-  //     while(this.movement === 'down') {
-  //       await delay(this.tickMs);
-
-  //       this.status++;
-
-  //       this.onStatusUpdate(this.status);
-
-  //       this.logger.trace(`Shutter.down at ${this.location} ${this.status}%`);
-
-  //       if(this.status >= status) {
-  //         this.logger.debug(`Shutter.down at ${this.location} max of ${status} reached`);
-          
-  //         this.stop();
-  //         this.onStatusUpdate(this.status);
-  //       }
-  //     }
-  //   }
-  // }
-
   async toggle(options = {}) {
     if(this.movement !== 'stop') {
       return await this.stop(options);
@@ -205,7 +189,15 @@ class Shutter {
     if(this.lastMovement === 'down') {
       return await this.up(options);
     }
-  } 
+  }
+
+  _setCommandBlock() {
+    this.commandBlocked = true;
+
+    setTimeout(() => {
+      this.commandBlocked = false;
+    }, this.commandBlockMs);
+  }
 
   async _powerOn() {
     if(this.power !== 'on') {
