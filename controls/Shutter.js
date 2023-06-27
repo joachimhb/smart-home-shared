@@ -142,7 +142,6 @@ class Shutter {
     this.lastMovement = 'down';
     this.movement = 'down';
 
-    this.movement = 'down';
     this.onMovementUpdate(this.movement);
 
     await this._directionDown();
@@ -201,7 +200,7 @@ class Shutter {
 
   async _powerOn() {
     if(this.power !== 'on') {
-      this.logger.debug(`Shutter._powerOn at ${this.location} - ${this.powerGpio} -> LOW`);
+      this.logger.debug(`Shutter._powerOn at ${this.location} - power ${this.powerGpio} -> LOW`);
       rpio.write(this.powerGpio, rpio.LOW);
       this.power = 'on';
       await delay(50);
@@ -210,31 +209,25 @@ class Shutter {
 
   async _powerOff() {
     if(this.power !== 'off') {
-      this.logger.debug(`Shutter._powerOff at ${this.location} - ${this.powerGpio} -> HIGH`);
+      this.logger.debug(`Shutter._powerOff at ${this.location} - power ${this.powerGpio} -> HIGH`);
       rpio.write(this.powerGpio, rpio.HIGH);
       this.power = 'off';
       await delay(50);
-      this.logger.debug(`Shutter._powerOff at ${this.location} - ${this.directionGpio} -> HIGH`);
+      this.logger.debug(`Shutter._powerOff at ${this.location} - direction ${this.directionGpio} -> HIGH`);
       rpio.write(this.directionGpio, rpio.HIGH);
     }
   }
 
   async _directionUp() {
-    if(this.direction !== 'up') {
-      this.logger.debug(`Shutter._directionUp at ${this.location} - ${this.directionGpio} -> HIGH`);
-      rpio.write(this.directionGpio, rpio.HIGH);
-      this.direction = 'up';
-      await delay(50);
-    }
+    this.logger.debug(`Shutter._directionUp at ${this.location} - direction ${this.directionGpio} -> HIGH`);
+    rpio.write(this.directionGpio, rpio.HIGH);
+    await delay(50);
   }
 
   async _directionDown() {
-    if(this.direction !== 'down') {
-      this.logger.debug(`Shutter._directionDown at ${this.location} - ${this.directionGpio} -> LOW`);
-      rpio.write(this.directionGpio, rpio.LOW);
-      this.direction = 'down';
-      await delay(50);
-    }
+    this.logger.debug(`Shutter._directionDown at ${this.location} - direction ${this.directionGpio} -> LOW`);
+    rpio.write(this.directionGpio, rpio.LOW);
+    await delay(50);
   }
 }
 
